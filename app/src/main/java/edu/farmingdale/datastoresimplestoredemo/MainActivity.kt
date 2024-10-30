@@ -7,8 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -89,8 +91,13 @@ fun DataStoreDemo(modifier: Modifier) {
     var userNameInput by remember { mutableStateOf("")}
 
     Column (modifier = Modifier.padding(50.dp)) {
-        Text("Values = ${appPrefs.value.userName}, " +
-                "${appPrefs.value.highScore}, ${appPrefs.value.darkMode}")
+        Text("Stores Values:",  modifier = Modifier.padding(bottom = 8.dp))
+                Text("Username: ${appPrefs.value.userName} ")
+                Text("High Score:${appPrefs.value.highScore}")
+                Text("Dark Mode:${appPrefs.value.darkMode}")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
         TextField(
             value = userNameInput,
             onValueChange = { userNameInput = it},
@@ -126,6 +133,6 @@ fun DataStoreDemo(modifier: Modifier) {
 // ToDo 1: Done Modify the App to store a high score and a dark mode preference
 // ToDo 2: Done Modify the APP to store the username through a text field
 // ToDo 3: Done Modify the App to save the username when the button is clicked
-// ToDo 4: Modify the App to display the values stored in the DataStore
+// ToDo 4: Done Modify the App to display the values stored in the DataStore
 
 
