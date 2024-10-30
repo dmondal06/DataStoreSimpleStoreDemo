@@ -26,43 +26,54 @@ import java.io.FileOutputStream
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Write and read from internal file
+        writeToInternalFile()
+        val fileContents = readFromInternalFile()
+        Log.d("MainActivity", fileContents) // Log the contents for debugging
+
+        // Set up the theme and content
         setContent {
-            DataStoreSimpleStoreDemoTheme {
+            val store = AppStorage(LocalContext.current)
+            val appPrefs = store.appPreferenceFlow.collectAsState(initial = AppPreferences())
+
+            DataStoreSimpleStoreDemoTheme(
+                darkTheme = appPrefs.value.darkMode // Set dark theme based on preference
+            ) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     DataStoreDemo(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
-        writeToInternalFile()
-        val fileContents = readFromInternalFile()
-        Log.d("MainActivity", fileContents)
     }
+
+    // Function to write a haiku to an internal file
     private fun writeToInternalFile() {
         val outputStream: FileOutputStream = openFileOutput("fav_haiku", Context.MODE_PRIVATE)
         val writer = PrintWriter(outputStream)
 
-        // Write three lines
+        // Write three lines of a haiku
         writer.println("This world of dew")
         writer.println("is a world of dew,")
         writer.println("and yet, and yet.")
-
         writer.close()
     }
 
+    // Function to read from the internal file and add custom formatting
     private fun readFromInternalFile(): String {
         val inputStream = openFileInput("fav_haiku")
         val reader = inputStream.bufferedReader()
         val stringBuilder = StringBuilder()
 
-        // Append each line and newline character to stringBuilder
+        // Append each line and additional text
         reader.forEachLine {
-            stringBuilder.append(it).append("\n BCS 371 \n").append(System.lineSeparator())
+            stringBuilder.append(it).append("\nBCS 371\n").append(System.lineSeparator())
         }
 
         return stringBuilder.toString()
     }
 }
+
 
 @Composable
 fun DataStoreDemo(modifier: Modifier) {
@@ -80,10 +91,24 @@ fun DataStoreDemo(modifier: Modifier) {
         }) {
             Text("Save Values")
         }
+        Button(onClick = {
+            coroutineScope.launch {
+                store.saveHighScore(200)
+            }
+        }) {
+            Text("Save High Score")
+        }
+        Button(onClick = {
+            coroutineScope.launch {
+                store.saveDarkMode(!appPrefs.value.darkMode)
+            }
+        }) {
+            Text("Toggle Dark Mode")
+        }
     }
 }
 
-// ToDo 1: Modify the App to store a high score and a dark mode preference
+// ToDo 1: Done Modify the App to store a high score and a dark mode preference
 // ToDo 2: Modify the APP to store the username through a text field
 // ToDo 3: Modify the App to save the username when the button is clicked
 // ToDo 4: Modify the App to display the values stored in the DataStore
